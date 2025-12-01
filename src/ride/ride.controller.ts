@@ -270,6 +270,9 @@ export class RideController {
     return this.rideService.currentRideDetails();
   }
 
+  
+
+
 
 
   @Get('endridebyme')

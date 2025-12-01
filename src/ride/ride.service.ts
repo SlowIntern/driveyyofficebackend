@@ -91,7 +91,6 @@ export class RideService {
         if (!ride) throw new NotFoundException('Ride not found');
 
       
-
         return ride;
     }
 
@@ -100,8 +99,6 @@ export class RideService {
         if (!rideId || !otp) throw new BadRequestException('Ride id and OTP are required');
 
         const ride = await this.rideModel.findById(rideId).populate('user').populate('captain').select('+otp');
-
-     
 
         if (!ride) throw new NotFoundException('Ride not found');
 
@@ -195,6 +192,9 @@ export class RideService {
 
         return data;
     }
+
+  
+
 
     
     
