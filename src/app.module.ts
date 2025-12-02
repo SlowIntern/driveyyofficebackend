@@ -31,6 +31,7 @@ import { BankModule } from './bank/bank.module';
 import { CronjobModule } from './cronjob/cronjob.module';
 import { Scheduler } from 'rxjs';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RazorpayModule } from './razorpay/razorpay.module';
 
 @Module({
   imports: [
@@ -61,6 +62,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     BankModule,
 
     CronjobModule,
+
+    RazorpayModule,
 
   ],
   controllers: [AppController, UserController],

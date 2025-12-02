@@ -73,6 +73,16 @@ export class Ride extends Document {
     })
     payoutStatus?: string;
 
+
+    // razorpay
+    @Prop()
+    razorpayOrderId?: string;
+
+    @Prop()
+    razorpayPaymentId?: string;
+
+  
+
 }
 
 export const RideSchema = SchemaFactory.createForClass(Ride);

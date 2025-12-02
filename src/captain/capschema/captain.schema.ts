@@ -111,6 +111,12 @@ export class Captain extends Document {
 
     @Prop({ type: Number, default: 0 })
     totalEarnings: number;
+
+
+
+    //Razorpay AcountId
+      @Prop()
+    razorpayAccountId?: string;
 }
 
 export const CaptainSchema = SchemaFactory.createForClass(Captain);

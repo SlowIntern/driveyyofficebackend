@@ -10,6 +10,7 @@ import { Captain } from 'src/captain/capschema/captain.schema';
 import { User } from 'src/user/schema/user.schema';
 import { StripeService } from 'src/stripe/stripe.service';
 import Stripe from 'stripe';
+import { RazorpayService } from 'src/razorpay/razorpay.service';
 
 @Injectable()
 export class RideService {
@@ -18,7 +19,8 @@ export class RideService {
         @InjectModel(Captain.name) private readonly captainModel: Model<Captain>,
         @InjectModel(User.name) private readonly userModel: Model<User>,
         private readonly mapService: MapService,
-        private readonly stripeService: StripeService
+        private readonly stripeService: StripeService,
+        private readonly razorpayService: RazorpayService,
     ) { }
 
     // Calculate fare between pickup and destination 
@@ -252,6 +254,46 @@ export class RideService {
         return this.rideModel.findById(rideId);
     }
   
+
+
+
+    // razorpay 
+
+
+    async createRazorpayPayment(rideId: string) {
+        const ride = await this.rideModel.findById(rideId);
+        if (!ride) throw new BadRequestException('Ride not found');
+
+        const order = await this.razorpayService.createOrder(ride.fare * 100); // convert to paise
+        ride.razorpayOrderId = order.id;
+        await ride.save();
+
+        return { orderId: order.id, amount: order.amount, currency: order.currency };
+    }
+
+    async completeRazorpayPayment(rideId: string, paymentId: string) {
+        const ride = await this.rideModel.findById(rideId).populate('captain');
+        if (!ride) throw new BadRequestException('Ride not found');
+
+        const payment = await this.razorpayService.fetchPayment(paymentId);
+        if (payment.status !== 'captured') throw new BadRequestException('Payment not completed');
+
+        ride.payoutStatus = 'paid';
+        ride.razorpayPaymentId = payment.id;
+
+        // Transfer 80% to driver
+        const driverShare = Math.floor(ride.fare * 100 * 0.8);
+
+        if (!ride.captain.razorpayAccountId) {
+            throw new Error('Captain does not have a Razorpay account');
+        }
+
+        await this.razorpayService.transferToDriver(ride.captain.razorpayAccountId, driverShare);
+
+
+        await ride.save();
+        return ride;
+    }
 
 
     

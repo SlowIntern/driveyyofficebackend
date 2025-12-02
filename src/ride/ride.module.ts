@@ -14,12 +14,14 @@ import { Mongoose } from 'mongoose';
 import { SendMessageGateway } from 'src/sendmessage/sendmessage.gateway';
 import { StripeService } from 'src/stripe/stripe.service';
 import { BankModule } from 'src/bank/bank.module';
+import { RazorpayService } from 'src/razorpay/razorpay.service';
+import { RazorpayModule } from 'src/razorpay/razorpay.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Ride.name, schema: RideSchema }]), MapModule, CaptainModule, UserModule
-  ,AuthModule,BankModule],
+  ,AuthModule,BankModule,RazorpayModule],
   controllers: [RideController],
-  providers: [RideService, JwtService,SendMessageGateway,StripeService],
+  providers: [RideService, JwtService,SendMessageGateway,StripeService,RazorpayService],
   exports:[RideService,MongooseModule]
 })
 export class RideModule {}
