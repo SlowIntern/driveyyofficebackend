@@ -36,17 +36,43 @@ export class Ride extends Document {
     @Prop()
     distance?: number; 
 
-    @Prop()
-    paymentID?: string;
+    // use them when i nedd to make payment in razorpay
+    // @Prop()
+    // paymentID?: string;
 
-    @Prop()
-    orderId?: string;
+    // @Prop()
+    // orderId?: string;
 
-    @Prop()
-    signature?: string;
+    // @Prop()
+    // signature?: string;
 
     @Prop({ select: false, required: true })
     otp: string;
+
+
+    // Stripe fields
+    @Prop()
+    stripePaymentIntentId?: string;
+
+    @Prop()
+    stripeChargeId?: string;
+
+    @Prop()
+    stripeCustomerId?: string;
+
+    @Prop()
+    stripePaymentMethodId?: string;
+
+    @Prop()
+    stripeTransferId?: string;
+
+    @Prop({
+        type: String,
+        enum: ['pending', 'paid', 'failed'],
+        default: 'pending',
+    })
+    payoutStatus?: string;
+
 }
 
 export const RideSchema = SchemaFactory.createForClass(Ride);

@@ -8,6 +8,8 @@ import { MapService } from 'src/map/map.service';
 import { CreateRideDto } from './dto/ride.dto.';
 import { Captain } from 'src/captain/capschema/captain.schema';
 import { User } from 'src/user/schema/user.schema';
+import { StripeService } from 'src/stripe/stripe.service';
+import Stripe from 'stripe';
 
 @Injectable()
 export class RideService {
@@ -16,6 +18,7 @@ export class RideService {
         @InjectModel(Captain.name) private readonly captainModel: Model<Captain>,
         @InjectModel(User.name) private readonly userModel: Model<User>,
         private readonly mapService: MapService,
+        private readonly stripeService: StripeService
     ) { }
 
     // Calculate fare between pickup and destination 
@@ -193,6 +196,61 @@ export class RideService {
         return data;
     }
 
+
+
+    async createPayment(rideId: string) {
+        const ride = await this.rideModel.findById(rideId);
+        if (!ride) throw new Error('Ride not found');
+
+        const paymentIntent = await this.stripeService.createPaymentIntent(ride.fare * 100);
+        ride.stripePaymentIntentId = paymentIntent.id;
+        ride.payoutStatus = 'pending';
+        await ride.save();
+
+        return { client_secret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id };
+    }
+
+    // Called after Stripe webhook payment success
+    async onPaymentSuccess(paymentIntentId: string) {
+        const ride = await this.rideModel.findOne({ stripePaymentIntentId: paymentIntentId }).populate('captain');
+        if (!ride) return;
+
+        ride.payoutStatus = 'paid';
+        const paymentIntent = await this.stripeService.stripe.paymentIntents.retrieve(paymentIntentId);
+        ride.stripeChargeId = paymentIntent.latest_charge as string;
+
+        await ride.save();
+
+        const driverShare = Math.floor(ride.fare * 100 * 0.8); // 80%
+        const transfer = await this.stripeService.transferToDriver(paymentIntentId, ride.captain, driverShare);
+
+        ride.stripeTransferId = transfer.id;
+        await ride.save();
+    }
+
+
+
+    async updateCaptainStripeStatus(
+        stripeAccountId: string,
+        stripeAccount: Stripe.Account,
+    ) {
+        const captain = await this.captainModel.findOne({ stripe_account_id: stripeAccountId });
+        if (!captain) {
+            throw new BadRequestException('Captain not found');
+        }
+
+        captain.stripe_charges_enabled = stripeAccount.charges_enabled ?? false;
+        captain.stripe_payouts_enabled = stripeAccount.payouts_enabled ?? false;
+        captain.stripe_requirements_due = stripeAccount.requirements?.currently_due || [];
+
+        await captain.save();
+
+        return captain;
+    }
+
+    async findById(rideId: string) {
+        return this.rideModel.findById(rideId);
+    }
   
 
 

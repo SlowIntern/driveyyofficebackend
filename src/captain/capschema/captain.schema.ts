@@ -78,16 +78,33 @@ export class Captain extends Document {
     @Prop({ type: Boolean, default: false })
     isverified: boolean;
 
-
-    //transfer details
+    // Stripe fields
     @Prop({ type: String, default: null })
     stripe_account_id: string;
+
+    @Prop({ type: Boolean, default: false })
+    stripe_charges_enabled: boolean;
+
+    @Prop({ type: Boolean, default: false })
+    stripe_payouts_enabled: boolean;
+
+    @Prop({ type: [String], default: [] })
+    stripe_requirements_due: string[];
 
     @Prop({ type: String, default: null })
     stripe_external_account_id: string;
 
     @Prop({ type: String, default: null })
     bank_last4: string;
+
+    @Prop({ type: String, default: null })
+    stripe_transfer_group: string;
+
+    @Prop({ type: Number, default: 0 })
+    totalPayouts: number;
+
+    @Prop({ type: Number, default: 0 })
+    pendingPayout: number;
 
     @Prop({ type: Boolean, default: false })
     isBlocked: boolean;
