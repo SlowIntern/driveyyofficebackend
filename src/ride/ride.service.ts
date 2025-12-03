@@ -186,9 +186,7 @@ export class RideService {
         if (!currentRideDetails)
         {
             throw new BadRequestException('No current ride found');
-        }
-        
-        
+        }       
         const data = {
             rideId: currentRideDetails._id,
             captainsocketId: currentRideDetails.captain.socketId,

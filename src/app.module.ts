@@ -32,6 +32,9 @@ import { CronjobModule } from './cronjob/cronjob.module';
 import { Scheduler } from 'rxjs';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RazorpayModule } from './razorpay/razorpay.module';
+import { RideScheduleModule } from './ride-schedule/ride-schedule.module';
+import { RideService } from './ride/ride.service';
+import { RideScheduleService } from './ride-schedule/ride-schedule.service';
 
 @Module({
   imports: [
@@ -64,6 +67,8 @@ import { RazorpayModule } from './razorpay/razorpay.module';
     CronjobModule,
 
     RazorpayModule,
+  ScheduleModule,
+    RideScheduleModule,
 
   ],
   controllers: [AppController, UserController],
