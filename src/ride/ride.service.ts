@@ -262,6 +262,7 @@ export class RideService {
 
     async createRazorpayPayment(rideId: string) {
         const ride = await this.rideModel.findById(rideId);
+        console.log("Ride in the db",ride);
         if (!ride) throw new BadRequestException('Ride not found');
 
         const order = await this.razorpayService.createOrder(ride.fare * 100); // convert to paise

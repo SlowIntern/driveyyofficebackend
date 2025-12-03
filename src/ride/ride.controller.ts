@@ -280,6 +280,14 @@ export class RideController {
     getendride(@Req() req) {
     return this.rideService.endRideByMe(req.user);      
   }
+
+
+  @Post('payment')
+  async payment(@Body('rideId') rideId: string) {
+    console.log("Ride ID from frontend:", rideId);
+    return this.rideService.createRazorpayPayment(rideId);
+  }
+
   
 
 }
