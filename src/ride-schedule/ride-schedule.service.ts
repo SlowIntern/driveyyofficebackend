@@ -17,8 +17,17 @@ export class RideScheduleService {
     ) { }
 
     async createScheduleRide(userId: string, dto: ScheduleDto) {
-        if (!userId || !dto) {
-            throw new Error("User or dto not found");
+        console.log("Useris found HIS ID ", userId);
+        console.log("DTO of the schedule ride", dto);
+        if (!userId) {
+            console.log("Useris found HIS ID ",userId);
+            throw new Error("Useris not found");
+        }
+        if (!dto)
+        {
+            console.log(dto);
+            throw new Error("DTO not found");
+
         }
 
         // const newSchedule = new this.scheduleModel({

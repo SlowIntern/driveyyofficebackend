@@ -11,6 +11,7 @@ export class RideScheduleController {
   @Post('scheduleRide')
   @UseGuards(JwtAuthGuard, RolesGuard)
   async createScheduleRide(@Req() req, @Body() dto: ScheduleDto) {
+    console.log("The dto in the conroller for schedule ride", dto);
     return this.rideScheduleService.createScheduleRide(req.user, dto);
   }
 }
