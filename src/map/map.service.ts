@@ -99,7 +99,5 @@ export class MapService {
             console.error(err);
             throw new BadRequestException('Failed to fetch captains in radius');
         }
-
-
     }
 }

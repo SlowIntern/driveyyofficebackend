@@ -110,7 +110,7 @@ export class RideController {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: err.message });
     }
-  }
+  }  
 
   // Confirm Ride (Captain accepts) 
   @Post('confirm')
@@ -150,6 +150,12 @@ export class RideController {
         });
       }
 
+
+      function signup(name, email, password)
+      {
+        console.log(name, email, password);
+        return;
+      }
       
       
 
