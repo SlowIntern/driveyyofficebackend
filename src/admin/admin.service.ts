@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -90,6 +90,16 @@ export class AdminService {
       captains: await this.capModel.countDocuments(),
       rides: await this.rideModel.countDocuments(),
     };
+
+  }
+
+
+  async verifiedDriver(captainId:string) {
+    const captain = await this.capModel.findById(captainId);
+    if (!captain) throw new BadRequestException('Captain not found');
+   
+    captain.isverified = true;
+    await captain.save();
 
   }
   

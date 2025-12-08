@@ -42,16 +42,16 @@ export class RideController {
   ) {
 
     const userId = req.user?._id;  //|| '672f3458f3a6d6ab2e2c23ab';
-    console.log(userId);
+   // console.log(userId);
     try {
-      console.log("Dto is defined", dto);
+   //   console.log("Dto is defined", dto);
       if (!userId) {  // change it with req.user?._id after testing it
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: 'Unauthorized' });
       }
 
-      console.log("Dto is defined",dto);
+   //   console.log("Dto is defined",dto);
 
       const ride = await this.rideService.createRide(
          userId.toString(),dto);
@@ -86,6 +86,8 @@ export class RideController {
         }
       });
 
+      console.log('Ride created:', ride);
+
       return res.status(HttpStatus.CREATED).json(ride);
     } catch (err: any) {
       console.error(err);
@@ -96,21 +98,28 @@ export class RideController {
   }
   GET
   // Get Fare 
-  @Post('fare')
+  @Post("fare")
   async getFare(
-    @Query('pickup') pickup: string,
-    @Query('destination') destination: string,
-    @Res() res: Response,
+    @Body() body: { pickup: string; destination: string },
+    @Res() res: Response
   ) {
     try {
-      const fare = await this.rideService.getFare(pickup, destination);
-      return res.status(HttpStatus.OK).json(fare);
-    } catch (err: any) {
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: err.message });
+      const fareObj = await this.rideService.getFare(body.pickup, body.destination);
+
+      // Convert object → array
+      const fareArray = Object.entries(fareObj).map(([type, price]) => ({
+        type,
+        price,
+      }));
+
+      return res.status(200).json(fareArray);
+
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
     }
-  }  
+  }
+
+
 
   // Confirm Ride (Captain accepts) 
   @Post('confirm')
@@ -293,6 +302,12 @@ export class RideController {
     console.log("Ride ID from frontend:", rideId);
     return this.rideService.createRazorpayPayment(rideId);
   }
+
+
+  // @Post('fare')
+  // async getFare(@Body('pickup') pickup: string, @Body('destination') destination: string) {
+  //   return await this.rideService.getFare(pickup, destination);
+  // }
 
   
 

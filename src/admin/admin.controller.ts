@@ -5,6 +5,7 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/decorators/roles.decorator';
 import { UserRole } from 'src/user/schema/user.schema';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @Controller('admin')
 export class AdminController {
@@ -40,5 +41,14 @@ export class AdminController {
   {
     return this.adminService.blockuser(user);
   } 
+
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async verify(chatId:string)
+  {
+    return this.adminService.verifiedDriver(chatId);
+  }
+
  
 }

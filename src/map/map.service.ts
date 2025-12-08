@@ -57,7 +57,7 @@ export class MapService {
 
             return {
                 distance: { value: route.summary.distance }, // meters ma hoga distance
-                duration: { value: route.summary.duration }, // seconds ma hoga distance
+                duration: { value: route.summary.duration }, // seconds ma hoga duration
             };
         } catch (err) {
             console.error(err);
