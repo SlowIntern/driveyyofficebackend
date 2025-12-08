@@ -190,7 +190,9 @@ export class RideService {
         const data = {
             rideId: currentRideDetails._id,
             captainsocketId: currentRideDetails.captain.socketId,
-            usersocketId: currentRideDetails.user.socketId
+            usersocketId: currentRideDetails.user.socketId,
+            destination: currentRideDetails.destination,
+            pickup: currentRideDetails.pickup
         }
 
         return data;
