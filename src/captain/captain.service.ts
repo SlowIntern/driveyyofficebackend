@@ -3,10 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Captain } from './capschema/captain.schema';
 import { Model } from 'mongoose';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Ride } from 'src/ride/rideSchema/ride.schema';
 
 @Injectable()
 export class CaptainService {
     constructor(@InjectModel(Captain.name) private captainModel: Model<Captain>,
+   
     private stripeService: StripeService) { }
     
     async getCaptainProfile(emaily: string)
@@ -93,5 +95,5 @@ export class CaptainService {
     
 
    
-
+    
 }

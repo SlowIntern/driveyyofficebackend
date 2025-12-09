@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Post,
   Query,
   Req,
@@ -73,12 +74,12 @@ export class RideController {
         ride._id.toString(),
       );
        captainsInRadius.forEach((captain) => {
-         console.log("Here the socket Id Does it Working",captain.socketId);
+     //    console.log("Here the socket Id Does it Working",captain.socketId);
        })
       // Notify all nearby captains
       captainsInRadius.forEach((captain) => {
         if (captain.socketId) {
-          console.log("Sending request to every user in the range",captain.socketId);
+    //      console.log("Sending request to every user in the range",captain.socketId);
           this.sendMessageGateway.sendMessageToSocketId(captain.socketId, {
             event: 'new-ride',
             data: rideWithUser,
@@ -86,7 +87,7 @@ export class RideController {
         }
       });
 
-      console.log('Ride created:', ride);
+  //    console.log('Ride created:', ride);
 
       return res.status(HttpStatus.CREATED).json(ride);
     } catch (err: any) {
@@ -151,7 +152,7 @@ export class RideController {
       });
 
       if (ride?.user?.socketId) {
-        console.log("Sending request to user:", ride.user.socketId);
+      //  console.log("Sending request to user:", ride.user.socketId);
 
         this.sendMessageGateway.sendMessageToSocketId(ride.user.socketId, {
           event: 'ride-confirmed',
@@ -162,13 +163,13 @@ export class RideController {
 
       function signup(name, email, password)
       {
-        console.log(name, email, password);
+   //     console.log(name, email, password);
         return;
       }
       
       
 
-      console.log("Arre chal na badwa",ride.user.socketId);
+    //  console.log("Arre chal na badwa",ride.user.socketId);
      // await this.sendMessageGateway.sendRideEvent(ride._id.toString(), 'ride-confirmed', ride);
       
       return res.status(HttpStatus.OK).json(ride);
@@ -278,11 +279,28 @@ export class RideController {
   }
 
 
+  // @Get('currentride')
+  // @UseGuards(JwtAuthGuard)
+  // async getCurrentRide(@Req() req)
+  // {
+  //   console.log("Check for the user", req.user);
+  //   return this.rideService.currentRideDetails(req.user);
+  // }
+
+
   @Get('currentride')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  async getCurrentRide()
-  {
-    return this.rideService.currentRideDetails();
+  async getCurrentRide(@Query('rideId') rideId: string) {
+    if (!rideId) {
+      throw new NotFoundException('Ride ID is required');
+    }
+
+    const ride = await this.rideService.currentRideDetails(rideId);
+
+    if (!ride) {
+      throw new NotFoundException('Ride not found');
+    }
+
+    return ride; // this will be returned as JSON
   }
 
   
@@ -308,6 +326,13 @@ export class RideController {
   // async getFare(@Body('pickup') pickup: string, @Body('destination') destination: string) {
   //   return await this.rideService.getFare(pickup, destination);
   // }
+
+
+  @Get('dashboard')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async dashboard(@Req() req) {
+    return this.rideService.captianDashboard(req.user);
+  }
 
   
 

@@ -29,7 +29,10 @@ export class AdminService {
   //get all captain details
 
   async allcaptainDetails() {
-    return await this.capModel.find();
+    const captains = await this.capModel.find()
+      .select('name vehicle phone socketId')  
+      .lean(); 
+    return captains;
   }
 
 

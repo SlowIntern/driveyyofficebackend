@@ -10,8 +10,8 @@ export class RazorpayService {
         const keyId = this.configService.get<string>('RAZORPAY_KEY_ID');
         const keySecret = this.configService.get<string>('RAZORPAY_KEY_SECRET');
 
-        console.log("Razorpay Key ID from env:", keyId);
-        console.log("Razorpay Key Secret from env:", keySecret );
+     //   console.log("Razorpay Key ID from env:", keyId);
+      //  console.log("Razorpay Key Secret from env:", keySecret );
 
         if (!keyId || !keySecret) throw new Error('Razorpay keys not set');
 

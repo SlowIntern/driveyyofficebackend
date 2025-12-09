@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 
 import * as crypto from 'crypto';
 import { Ride } from './rideSchema/ride.schema';
@@ -126,12 +126,13 @@ export class RideService {
         if (ride.status !== 'ongoing') throw new BadRequestException('Ride not ongoing');
 
         await this.rideModel.findByIdAndUpdate(rideId, { status: 'completed' });
-        const captainInDb = await this.captainModel.findById(captain._id);
+        const captainInDb = await this.captainModel.findById(ride.captain._id);
         if (captainInDb === null)
         {
             throw new BadRequestException('Fare not found');
         }
-        captainInDb.totalEarnings += ride.fare;
+        captainInDb.totalEarnings += Number(ride.fare);
+
         await captainInDb.save();
 
         await this.captainModel.findByIdAndUpdate(captain._id, { status: 'inactive' }); // after the ride is completed the captain is available for another rides
@@ -152,7 +153,7 @@ export class RideService {
 
         await this.captainModel.findByIdAndUpdate(user._id, { status: 'inactive' });
         
-        console.log("Here is the detail of the rideEnd by captain",ride);
+     //   console.log("Here is the detail of the rideEnd by captain",ride);
         return ride;
     }
 
@@ -179,24 +180,101 @@ export class RideService {
     }
 
 
-    async currentRideDetails()
-    {
-        // write more optimal code this is not optimal for the multiple user because it can fetch all the user.....
-        const currentRideDetails =await this.rideModel.findOne({ status: 'accepted' }).populate('captain').populate('user');
-        if (!currentRideDetails)
-        {
-            throw new BadRequestException('No current ride found');
-        }       
-        const data = {
-            rideId: currentRideDetails._id,
-            captainsocketId: currentRideDetails.captain.socketId,
-            usersocketId: currentRideDetails.user.socketId,
-            destination: currentRideDetails.destination,
-            pickup: currentRideDetails.pickup
+
+//     async currentRideDetails(rideId: any) {
+    
+//         console.log("user in the currentRideDetails funtion", user);
+//     const userId = user._id instanceof mongoose.Types.ObjectId
+//         ? user._id
+//         : new mongoose.Types.ObjectId(user._id);
+
+//         console.log("userId in the currentRideDetails funtion", userId);
+
+//     let ride;
+
+//     if (user.role === 'captain') {
+//         // For captains, find ride where they are assigned as captain
+//         ride = await this.rideModel
+//             .findOne({
+//                 captain: userId,
+//                 status: { $in: ['pending', 'accepted', 'ongoing'] }
+//             })
+//             .populate([
+//                 { path: 'user', select: 'name socketId' },
+//                 { path: 'captain', select: 'name vehicle socketId' }
+//             ])
+//             .lean();
+//     } else {
+//         // For normal users, find ride where they are the user
+//         ride = await this.rideModel
+//             .findOne({
+//                 user: userId,
+//                 status: { $in: ['pending', 'accepted', 'ongoing'] }
+//             })
+//             .populate([
+//                 { path: 'user', select: 'name socketId' },
+//                 { path: 'captain', select: 'name vehicle socketId' }
+//             ])
+//             .lean();
+//     }
+        
+//         console.log("ride in the currentRideDetails funtion", ride);
+
+//     if (!ride) {
+//         throw new BadRequestException('No current ride found');
+//     }
+
+//     return {
+//         rideId: ride._id.toString(),
+//         userId: ride.user?._id?.toString() || null,
+//         captainId: ride.captain?._id?.toString() || null,
+//         userSocketId: ride.user?.socketId || null,
+//         captainSocketId: ride.captain?.socketId || null,
+//         pickup: ride.pickup,
+//         destination: ride.destination,
+//         fare: ride.fare || null,
+//         status: ride.status
+//     };
+    // }
+    
+
+    async currentRideDetails(rideId: string) {
+        if (!rideId) {
+            throw new BadRequestException('Ride ID is required');
         }
 
-        return data;
+        // Convert to ObjectId if needed
+        const rideObjectId = Types.ObjectId.isValid(rideId) ? new Types.ObjectId(rideId) : null;
+        if (!rideObjectId) {
+            throw new BadRequestException('Invalid Ride ID');
+        }
+
+        const ride = await this.rideModel
+            .findById(rideObjectId)
+            .populate([
+                { path: 'user', select: 'name socketId' },
+                { path: 'captain', select: 'name vehicle socketId' },
+            ])
+            .lean();
+
+        if (!ride) {
+            throw new BadRequestException('Ride not found');
+        }
+
+        return {
+            rideId: ride._id.toString(),
+            userId: ride.user?._id?.toString() || null,
+            captainId: ride.captain?._id?.toString() || null,
+            userSocketId: ride.user?.socketId || null,
+            captainSocketId: ride.captain?.socketId || null,
+            pickup: ride.pickup,
+            destination: ride.destination,
+            fare: ride.fare ?? null,
+            status: ride.status,
+        };
     }
+
+
 
 
 
@@ -262,7 +340,7 @@ export class RideService {
 
     async createRazorpayPayment(rideId: string) {
         const ride = await this.rideModel.findById(rideId);
-        console.log("Ride in the db",ride);
+      //  console.log("Ride in the db",ride);
         if (!ride) throw new BadRequestException('Ride not found');
 
         const order = await this.razorpayService.createOrder(ride.fare * 100); // convert to paise
@@ -295,6 +373,24 @@ export class RideService {
         await ride.save();
         return ride;
     }
+
+
+   async captianDashboard(captain: Captain) {
+    const captainInDb = await this.captainModel.findById(captain._id);
+    if (!captainInDb) throw new BadRequestException('Captain not found');
+
+    // Get all rides of this captain
+    const rides = await this.rideModel
+        .find({ captain: captain._id })
+        .select(" pickup destination fare status createdAt") // pick req fields
+        .lean(); // improves performance
+
+    return {
+        totalEarning: captainInDb.totalEarnings,
+        totalRides: rides.length,
+        rideHistory: rides, // full list of rides
+    };
+}
 
 
     

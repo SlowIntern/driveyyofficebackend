@@ -19,7 +19,7 @@ import { Captain } from 'src/captain/capschema/captain.schema';
 
 @WebSocketGateway({
   cors: {
-    origin: ["http://localhost:3001"],  // frontend url
+    origin: ["http://localhost:3001"],  
     credentials: true,
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -42,7 +42,7 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
   ) { }
 
   handleConnection(client: Socket) {
-    console.log(client.id);
+ //   console.log(client.id);
     this.logger.log(`Client connected: ${client.id}`);
   }
 
@@ -66,8 +66,8 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
   ) {
     if (!data?.userId) return;
 
-    console.log(data);
-    console.log(client.id);
+ //   console.log(data);
+  //  console.log(client.id);
     this.activeSockets.set(data.userId, client.id);  // this will map user/captain Id to socket Id
     this.logger.log(`Registered socket for ${data.role}: ${data.userId} (${client.id})`);
 
@@ -77,14 +77,14 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
         { socketId: client.id },
         { new: true }
       );
-     console.log("User updated:", user);
+   //  console.log("User updated:", user);
     } else if (data.role === 'captain') {
       const captain = await this.captainModel.findByIdAndUpdate(
         data.userId,
         { socketId: client.id },
         { new: true }
       );
-      console.log("Captain updated:", captain);
+   //   console.log("Captain updated:", captain);
     }
 
     client.emit('registered', { success: true });

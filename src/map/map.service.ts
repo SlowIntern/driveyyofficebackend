@@ -24,7 +24,7 @@ export class MapService {
 
             if (features && features.length > 0) {
                 const [lng, ltd] = features[0].geometry.coordinates;
-                console.log(lng, ltd);
+            //    console.log(lng, ltd);
                 return { ltd, lng };
             } else {
                 throw new BadRequestException('Unable to fetch coordinates');

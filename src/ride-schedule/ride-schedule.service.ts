@@ -17,10 +17,10 @@ export class RideScheduleService {
     ) { }
 
     async createScheduleRide(userId: string, dto: ScheduleDto) {
-        console.log("Useris found HIS ID ", userId);
-        console.log("DTO of the schedule ride", dto);
+      //  console.log("Useris found HIS ID ", userId);
+      //  console.log("DTO of the schedule ride", dto);
         if (!userId) {
-            console.log("Useris found HIS ID ",userId);
+           console.log("Useris found HIS ID ",userId);
             throw new Error("Useris not found");
         }
         if (!dto)

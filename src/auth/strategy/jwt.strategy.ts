@@ -49,8 +49,7 @@ export class JwtStrategy extends
         if (!user) {
             throw new UnauthorizedException('User not found or deleted');
         }
-        console.log(user);
-
+      //  console.log(user);
         return user;
     }
 }

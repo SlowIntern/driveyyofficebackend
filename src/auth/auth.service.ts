@@ -159,11 +159,11 @@ export class AuthService {
     async forgetPassword(emaily: string,role:string)
     {
         let user;
-        if (role === 'user')
+        if (role === 'user' || role === 'admin')
         {
             user = await this.userModel.findOne({ email: emaily })
         }
-        else
+        else if (role === 'captain')
         {
             user = await this.captainModel.findOne({ email: emaily });
         }

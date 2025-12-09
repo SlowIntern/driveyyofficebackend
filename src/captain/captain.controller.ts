@@ -66,4 +66,8 @@ export class CaptainController {
 
     return this.stripeService.payoutDriver(captain, body.amount);
   }
+
+
+  // Dashboard for captain
+
 }

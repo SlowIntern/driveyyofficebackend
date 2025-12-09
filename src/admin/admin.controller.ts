@@ -42,13 +42,14 @@ export class AdminController {
     return this.adminService.blockuser(user);
   } 
 
-
+  @Post('verify')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async verify(chatId:string)
-  {
-    return this.adminService.verifiedDriver(chatId);
+  @Roles(UserRole.CAPTAIN) // only admin can verify
+  async verify(@Body('captainId') captainId: string) {
+   // console.log("Captain ID received:", captainId);
+    return this.adminService.verifiedDriver(captainId);
   }
+
 
  
 }
