@@ -8,15 +8,13 @@ export class BankAccount extends Document {
     user: Types.ObjectId
 
     @Prop({ type: String, default: null })
-    stripe_account_id: string;   // Connected account ID
+    stripe_account_id: string;   
 
     @Prop({ type: String, default: null })
-    stripe_external_account_id: string; // Bank account ID
+    stripe_external_account_id: string; 
 
     @Prop({ type: String, default: null })
-    bank_last4: string;          // Last 4 digits for display
-
-
+    bank_last4: string;          
 }
 
 export const BankAccountSchema = SchemaFactory.createForClass(BankAccount)

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, BadRequestException } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -44,10 +44,21 @@ export class AdminController {
 
   @Post('verify')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.CAPTAIN) // only admin can verify
+  @Roles(UserRole.ADMIN) // only admin can verify
   async verify(@Body('captainId') captainId: string) {
    // console.log("Captain ID received:", captainId);
     return this.adminService.verifiedDriver(captainId);
+  }
+
+
+  @Get('captains/:captainId')
+  async getCaptainDetail(@Param('captainId') captainId: string) {
+    if (!captainId) {
+      throw new BadRequestException('Captain ID is required');
+    }
+
+    const data = await this.adminService.captainDetail(captainId);
+    return data;
   }
 
 

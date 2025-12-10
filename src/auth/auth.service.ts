@@ -51,6 +51,7 @@ export class AuthService {
 
     //  Login user and issue JWT
     async login(dto: LoginDto) {
+        console.log("The login data is",dto);
 
         let user;
         if (dto.role === 'user') {
@@ -60,7 +61,8 @@ export class AuthService {
             user = await this.captainModel.findOne({ email: dto.email }).select('+password');
         }
         else {
-            throw new BadRequestException("Please Select availd role");
+            //for the admin role
+            user =await this.userModel.findOne({ email: dto.email }).select('+password');
         }
         if (!user) throw new UnauthorizedException('Invalid email or password');
 

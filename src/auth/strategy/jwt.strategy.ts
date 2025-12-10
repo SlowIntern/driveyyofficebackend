@@ -41,7 +41,7 @@ export class JwtStrategy extends
         }
 
         let user;
-        if (payload.role === 'user') {
+        if (payload.role === 'user' || payload.role === 'admin') {
             user = await this.userModel.findById(payload.sub).select('-password');
         } else if (payload.role === 'captain') {
             user = await this.captainModel.findById(payload.sub).select('-password');

@@ -6,10 +6,19 @@ import { CaptainModule } from 'src/captain/captain.module';
 import { RideModule } from 'src/ride/ride.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlackListEmail, BlackListEmailSchema } from './schema/blackEmail.schema';
+import { Verified, VerifiedSchema } from 'src/verified-service/verifySchema/verify.Schema';
 
 @Module({
-  imports:[MongooseModule.forFeature([{name:BlackListEmail.name,schema:BlackListEmailSchema}]),UserModule,CaptainModule,RideModule],
+  imports: [
+    MongooseModule.forFeature([
+      { name: BlackListEmail.name, schema: BlackListEmailSchema },
+      { name: Verified.name, schema: VerifiedSchema }, 
+    ]),
+    UserModule,
+    CaptainModule,
+    RideModule,
+  ],
   controllers: [AdminController],
   providers: [AdminService],
 })
-export class AdminModule {}
+export class AdminModule { }

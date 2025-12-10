@@ -1,9 +1,6 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { UserRole } from 'src/user/schema/user.schema';
 
-export enum UserRole {
-    USER = 'user',
-    CAPTAIN = 'captain',
-}
 
 export class LoginDto {
     @IsNotEmpty()
@@ -14,6 +11,6 @@ export class LoginDto {
     @IsString()
     password: string;
 
-    @IsEnum(UserRole, { message: 'Role must be either user or captain' })
+    @IsEnum(UserRole, { message: 'Role must be user, captain, or admin' })
     role: UserRole;
 }

@@ -8,6 +8,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 @Module({
   imports: [MongooseModule.forFeature([{ name: Verified.name, schema: VerifiedSchema }])],
   controllers: [VerifiedServiceController],
-  providers: [VerifiedServiceService,CloudinaryService],
+  providers: [VerifiedServiceService, CloudinaryService],
+  exports: [VerifiedServiceModule]
 })
 export class VerifiedServiceModule {}

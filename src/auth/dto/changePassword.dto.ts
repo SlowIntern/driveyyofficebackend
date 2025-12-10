@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { UserRole } from "./login.dto";
+import { UserRole } from "src/user/schema/user.schema";
 
 export class ChangePasswordDto{
     @IsEmail()
@@ -15,7 +15,7 @@ export class ChangePasswordDto{
     @IsNotEmpty()
     newPassword: string;
 
-    @IsEnum(UserRole, { message: 'Role must be either user or captain' })
+    @IsEnum(UserRole, { message: 'Role must be either user or captain or admin' })
     role: UserRole;
 
 }

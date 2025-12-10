@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import { Captain } from 'src/captain/capschema/captain.schema';
 import { Ride } from 'src/ride/rideSchema/ride.schema';
 import { BlackListEmail } from './schema/blackEmail.schema';
+import { Verified } from 'src/verified-service/verifySchema/verify.Schema';
 
 @Injectable()
 export class AdminService {
@@ -14,7 +15,8 @@ export class AdminService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Captain.name) private readonly capModel: Model<Captain>,
     @InjectModel(Ride.name) private readonly rideModel: Model<Ride>,
-    @InjectModel(BlackListEmail.name) private readonly blackModel: Model<BlackListEmail>) { }
+    @InjectModel(BlackListEmail.name) private readonly blackModel: Model<BlackListEmail>,
+  @InjectModel(Verified.name)private readonly verifiedModel: Model<Verified>) { }
 
   // get all user data
   async allUserDetails(): Promise<User[]> {        //Promise<User> for returning one user....
@@ -105,6 +107,44 @@ export class AdminService {
     await captain.save();
 
   }
+
+async captainDetail(captainId: string) {
+  const verifiedDoc = await this.verifiedModel
+    .findOne({ captainId })
+    .populate<{ captainId: Captain }>('captainId', 'firstName lastname email socketId vehicle isverified');
+
+  if (!verifiedDoc) {
+    throw new BadRequestException('Captain document not found. Please upload verification documents.');
+  }
+
+  const captain = verifiedDoc.captainId as Captain;
+
+  const data = {
+    captain: {
+      id: captain._id,
+      firstName: captain.firstName,
+      lastName: captain.lastname,
+      email: captain.email,
+      socketId: captain.socketId,
+      vehicle: captain.vehicle,
+      isVerified: captain.isverified
+    },
+    documents: {
+      aadhaarFront: verifiedDoc.aadhaarFront,
+      aadhaarBack: verifiedDoc.aadhaarBack,
+      panCard: verifiedDoc.panCard,
+      licenseFront: verifiedDoc.licenseFront,
+      licenseBack: verifiedDoc.licenseBack,
+      rcFront: verifiedDoc.rcFront,
+      rcBack: verifiedDoc.rcBack,
+      profilePhoto: verifiedDoc.profilePhoto
+    }
+  };
+
+  console.log("the upload documents data i have is this",data);
+
+  return data;
+}
   
   
 }
