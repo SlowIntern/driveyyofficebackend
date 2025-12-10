@@ -116,7 +116,16 @@ export class Captain extends Document {
 
     //Razorpay AcountId
       @Prop()
-    razorpayAccountId?: string;
+      razorpayAccountId?: string;
+    
+    @Prop()
+    razorpayContactId?: string;
+
+    @Prop()
+    razorpayFundAccountId?: string;
+
+    @Prop({ type: String, enum: ['paid', 'pending'], default: 'pending' })
+    payoutStatus?: string;
 }
 
 export const CaptainSchema = SchemaFactory.createForClass(Captain);

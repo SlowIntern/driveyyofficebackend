@@ -1,0 +1,159 @@
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import Razorpay from 'razorpay';
+
+@Injectable()
+export class RazorpayService {
+    private razorpay: Razorpay;
+    private authHeader: string;
+
+    constructor(private configService: ConfigService) {
+        const keyId = this.configService.get<string>('RAZORPAY_KEY_ID');
+        const keySecret = this.configService.get<string>('RAZORPAY_KEY_SECRET');
+
+        if (!keyId || !keySecret) throw new Error('Razorpay keys not set');
+
+        this.razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+      c
+    }
+
+    // ---------------- Razorpay Payment Gateway ----------------
+
+    /**
+     * Create Razorpay Order
+     * @param amount Amount in paise
+     * @param currency Currency code, default INR
+     * @param receipt Optional receipt id
+     */
+    async createOrder(amount: number, currency = 'INR', receipt?: string) {
+        return this.razorpay.orders.create({
+            amount,
+            currency,
+            receipt: receipt || `rcpt_${Date.now()}`,
+            payment_capture: true,
+        });
+    }
+
+    /**
+     * Fetch Payment Details
+     */
+    async fetchPayment(paymentId: string) {
+        return this.razorpay.payments.fetch(paymentId);
+    }
+
+    // ---------------- RazorpayX / Payouts ----------------
+
+    /**
+     * Create a Contact (Driver)
+     */
+    async createContact(name: string, email: string) {
+        const res = await axios.post(
+            'https://api.razorpay.com/v1/contacts',
+            {
+                name,
+                email,
+                type: 'employee',
+                reference_id: `driver_${Date.now()}`,
+            },
+            { headers: { Authorization: this.authHeader } },
+        );
+        return res.data;
+    }
+
+    /**
+     * Create UPI Fund Account (Test Mode)
+     */
+    async createUPIFundAccount(contactId: string, upi: string) {
+        const res = await axios.post(
+            'https://api.razorpay.com/v1/fund_accounts',
+            {
+                contact_id: contactId,
+                account_type: 'vpa',
+                vpa: { address: upi }, // test@upi
+            },
+            { headers: { Authorization: this.authHeader } },
+        );
+        return res.data;
+    }
+
+    /**
+     * Create Bank Fund Account (Test Mode)
+     */
+    async createBankFundAccount(contactId: string) {
+        const res = await axios.post(
+            'https://api.razorpay.com/v1/fund_accounts',
+            {
+                contact_id: contactId,
+                account_type: 'bank_account',
+                bank_account: {
+                    name: 'Test User',
+                    ifsc: 'HDFC0000001',
+                    account_number: '000000000000001',
+                },
+            },
+            { headers: { Authorization: this.authHeader } },
+        );
+        return res.data;
+    }
+
+    /**
+     * Create Test Payout (Simulated)
+     */
+    async createTestPayout(fundAccountId: string, amount: number) {
+        const res = await axios.post(
+            'https://api.razorpay.com/v1/payouts',
+            {
+                account_number: '23232300232323', // Razorpay Test Virtual Account
+                fund_account_id: fundAccountId,
+                amount, // in paise
+                currency: 'INR',
+                mode: 'UPI', // or "IMPS"
+                purpose: 'payout',
+                queue_if_low_balance: true,
+            },
+            { headers: { Authorization: this.authHeader } },
+        );
+        return res.data;
+    }
+
+    // ---------------- Full Ride Payout Flow (Test Mode) ----------------
+
+    /**
+     * Test payout flow for a ride
+     */
+    async testPayoutForRide(ride: any) {
+        if (!ride || !ride.captain) throw new BadRequestException('Ride or captain not found');
+
+        const captain = ride.captain;
+
+        // 1️⃣ Create Contact if not exists
+        if (!captain.razorpayContactId) {
+            const contact = await this.createContact(captain.firstName, captain.email);
+            captain.razorpayContactId = contact.id;
+            // Save captain to DB if needed
+        }
+
+        // 2️⃣ Create Fund Account if not exists
+        if (!captain.razorpayFundAccountId) {
+            const fundAccount = await this.createUPIFundAccount(captain.razorpayContactId, 'test@upi');
+            captain.razorpayFundAccountId = fundAccount.id;
+            // Save captain to DB if needed
+        }
+
+        // 3️⃣ Calculate driver share (80% of fare)
+        const driverShare = Math.floor(ride.fare * 100 * 0.8); // amount in paise
+
+        // 4️⃣ Create Test Payout
+        const payout = await this.createTestPayout(captain.razorpayFundAccountId, driverShare);
+
+        // 5️⃣ Update ride payout info (optional)
+        ride.payoutStatus = 'processing';
+        ride.payoutId = payout.id;
+
+        return {
+            message: 'Simulated payout created (Test Mode)',
+            payout,
+        };
+    }
+}

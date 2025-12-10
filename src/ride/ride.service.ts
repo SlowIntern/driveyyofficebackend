@@ -133,7 +133,11 @@ export class RideService {
         }
         captainInDb.totalEarnings += Number(ride.fare);
 
+        console.log("Here is the detail of the totalearnig",captainInDb.totalEarnings);
+
         await captainInDb.save();
+
+        console.log("Here is the detail of the captain after adding earning",captainInDb);
 
         await this.captainModel.findByIdAndUpdate(captain._id, { status: 'inactive' }); // after the ride is completed the captain is available for another rides
 
@@ -260,8 +264,9 @@ export class RideService {
         if (!ride) {
             throw new BadRequestException('Ride not found');
         }
+        
 
-        return {
+        const data= {
             rideId: ride._id.toString(),
             userId: ride.user?._id?.toString() || null,
             captainId: ride.captain?._id?.toString() || null,
@@ -271,7 +276,12 @@ export class RideService {
             destination: ride.destination,
             fare: ride.fare ?? null,
             status: ride.status,
+            otp:ride.otp,
         };
+
+        console.log("Current Ride Details from the backend", data);
+
+        return data;
     }
 
 
@@ -345,6 +355,7 @@ export class RideService {
 
         const order = await this.razorpayService.createOrder(ride.fare * 100); // convert to paise
         ride.razorpayOrderId = order.id;
+        ride.payoutStatus = 'paid';
         await ride.save();
 
         return { orderId: order.id, amount: order.amount, currency: order.currency };

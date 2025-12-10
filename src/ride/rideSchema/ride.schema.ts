@@ -46,7 +46,7 @@ export class Ride extends Document {
     // @Prop()
     // signature?: string;
 
-    @Prop({ select: false, required: true })
+    @Prop({ select: true, required: true })
     otp: string;
 
 
@@ -80,6 +80,9 @@ export class Ride extends Document {
 
     @Prop()
     razorpayPaymentId?: string;
+
+    @Prop()
+    payoutId?: string;
 
   
 

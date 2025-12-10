@@ -36,12 +36,21 @@ export class RazorpayService {
 
     // Transfer to driver (payout)
     async transferToDriver(accountId: string, amount: number, currency = 'INR') {
-        return (this.razorpay as any).payouts.create({
-            account_number: accountId,
-            amount,
-            currency,
-            mode: 'IMPS',
-            purpose: 'payout',
-        });
+        try {
+            const response = await (this.razorpay as any).payouts.create({
+                account_number: accountId,
+                amount,
+                currency,
+                mode: 'IMPS',
+                purpose: 'payout',
+            });
+
+            console.log("PAYOUT SUCCESS:", response);
+            return response;
+        } catch (error) {
+            console.error("PAYOUT ERROR:", error);
+            throw error;
+        }
     }
+
 }
