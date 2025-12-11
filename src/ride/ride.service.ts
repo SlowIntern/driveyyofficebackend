@@ -402,9 +402,5 @@ export class RideService {
         totalRides: rides.length,
         rideHistory: rides, // full list of rides
     };
-}
-
-
-    
-    
+   }
 }
