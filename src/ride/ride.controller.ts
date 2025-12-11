@@ -34,7 +34,7 @@ export class RideController {
   // Create Ride 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER)
+  @Roles(UserRole.USER)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async createRide(
     @Body() dto: CreateRideDto,
@@ -43,19 +43,19 @@ export class RideController {
   ) {
 
     const userId = req.user?._id;  //|| '672f3458f3a6d6ab2e2c23ab';
-   // console.log(userId);
+    // console.log(userId);
     try {
-   //   console.log("Dto is defined", dto);
+      //   console.log("Dto is defined", dto);
       if (!userId) {  // change it with req.user?._id after testing it
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: 'Unauthorized' });
       }
 
-   //   console.log("Dto is defined",dto);
+      //   console.log("Dto is defined",dto);
 
       const ride = await this.rideService.createRide(
-         userId.toString(),dto);
+        userId.toString(), dto);
 
       const pickupCoordinates = await this.mapService.getAddressCoordinate(
         dto.pickup,
@@ -66,20 +66,20 @@ export class RideController {
       //   2,
       // );
 
-       const captainsInRadius = await this.rideService.allCaptains();  // for checking only
+      const captainsInRadius = await this.rideService.allCaptains();  // for checking only
 
       ride.otp = '';
 
       const rideWithUser = await this.rideService.getRideWithUser(
         ride._id.toString(),
       );
-       captainsInRadius.forEach((captain) => {
-     //    console.log("Here the socket Id Does it Working",captain.socketId);
-       })
+      captainsInRadius.forEach((captain) => {
+        //    console.log("Here the socket Id Does it Working",captain.socketId);
+      })
       // Notify all nearby captains
       captainsInRadius.forEach((captain) => {
         if (captain.socketId) {
-    //      console.log("Sending request to every user in the range",captain.socketId);
+          //      console.log("Sending request to every user in the range",captain.socketId);
           this.sendMessageGateway.sendMessageToSocketId(captain.socketId, {
             event: 'new-ride',
             data: rideWithUser,
@@ -87,7 +87,7 @@ export class RideController {
         }
       });
 
-  //    console.log('Ride created:', ride);
+      //    console.log('Ride created:', ride);
 
       return res.status(HttpStatus.CREATED).json(ride);
     } catch (err: any) {
@@ -125,7 +125,7 @@ export class RideController {
   // Confirm Ride (Captain accepts) 
   @Post('confirm')
   @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.CAPTAIN)
+  @Roles(UserRole.CAPTAIN)
   @UsePipes(new ValidationPipe({ whitelist: true }))
 
   async confirmRide(
@@ -152,7 +152,7 @@ export class RideController {
       });
 
       if (ride?.user?.socketId) {
-      //  console.log("Sending request to user:", ride.user.socketId);
+        //  console.log("Sending request to user:", ride.user.socketId);
 
         this.sendMessageGateway.sendMessageToSocketId(ride.user.socketId, {
           event: 'ride-confirmed',
@@ -161,17 +161,16 @@ export class RideController {
       }
 
 
-      function signup(name, email, password)
-      {
-   //     console.log(name, email, password);
+      function signup(name, email, password) {
+        //     console.log(name, email, password);
         return;
       }
-      
-      
 
-    //  console.log("Arre chal na badwa",ride.user.socketId);
-     // await this.sendMessageGateway.sendRideEvent(ride._id.toString(), 'ride-confirmed', ride);
-      
+
+
+      //  console.log("Arre chal na badwa",ride.user.socketId);
+      // await this.sendMessageGateway.sendRideEvent(ride._id.toString(), 'ride-confirmed', ride);
+
       return res.status(HttpStatus.OK).json(ride);
     } catch (err: any) {
       console.error(err);
@@ -184,7 +183,7 @@ export class RideController {
   // Start Ride 
   @Post('start')
   @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.CAPTAIN)
+  @Roles(UserRole.CAPTAIN)
   async startRide(
     @Query('rideId') rideId: string,
     @Query('otp') otp: string,
@@ -267,14 +266,13 @@ export class RideController {
         .json({ message: err.message });
     }
   }
-  
+
 
   // this function is used to get the details of all the rides.
   @Get('allrides')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getAllridesDetail()
-  {
+  async getAllridesDetail() {
     return this.rideService.getAllRides();
   }
 
@@ -303,15 +301,15 @@ export class RideController {
     return ride; // this will be returned as JSON
   }
 
-  
+
 
 
 
 
   @Get('endridebyme')
-    @UseGuards(JwtAuthGuard)
-    getendride(@Req() req) {
-    return this.rideService.endRideByMe(req.user);      
+  @UseGuards(JwtAuthGuard)
+  getendride(@Req() req) {
+    return this.rideService.endRideByMe(req.user);
   }
 
 
@@ -334,6 +332,6 @@ export class RideController {
     return this.rideService.captianDashboard(req.user);
   }
 
-  
+
 
 }

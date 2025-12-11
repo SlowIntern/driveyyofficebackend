@@ -378,9 +378,10 @@ export class RideService {
             throw new Error('Captain does not have a Razorpay account');
         }
 
-        await this.razorpayService.transferToDriver(ride.captain.razorpayAccountId, driverShare);
+      const transfer=  await this.razorpayService.transferToDriver(ride.captain.razorpayAccountId, driverShare);
 
-
+        console.log("Razorpay Transfer Details:", transfer);      
+        ride.payoutId = transfer.id;
         await ride.save();
         return ride;
     }
