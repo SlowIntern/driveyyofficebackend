@@ -310,10 +310,6 @@ export class RideService {
         return data;
     }
 
-
-
-
-
     async createPayment(rideId: string) {
         const ride = await this.rideModel.findById(rideId);
         if (!ride) throw new Error('Ride not found');
@@ -367,12 +363,8 @@ export class RideService {
     async findById(rideId: string) {
         return this.rideModel.findById(rideId);
     }
-  
-
-
-
-    // razorpay 
-
+      
+    // razorpay
 
     async createRazorpayPayment(rideId: string) {
         const ride = await this.rideModel.findById(rideId);

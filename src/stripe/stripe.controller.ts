@@ -13,7 +13,7 @@ export class StripeController {
         private rideService: RideService,
     ) { }
 
-    @Post('webhook') // Full URL: /stripe/webhook
+    @Post('webhook')
    @Header('Content-Type', 'application/json')
     async handleWebhook(@Req() req: Request) {
         const signature = req.headers['stripe-signature'];
@@ -23,13 +23,13 @@ export class StripeController {
 
         let event;
         try {
-            // Verify webhook signature
+
             event = this.stripeService.constructEventFromPayload(signature as string, payload);
         } catch (err) {
             throw new BadRequestException('Invalid Stripe Webhook Signature');
         }
 
-        // Handle events
+      
         switch (event.type) {
             case 'payment_intent.succeeded':
                 await this.rideService.onPaymentSuccess(event.data.object.id);

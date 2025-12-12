@@ -20,10 +20,8 @@ export class AdminService {
 
   // get all user data
   async allUserDetails(): Promise<User[]> {        //Promise<User> for returning one user....
-    const users = await this.userModel.find();
-    users.forEach((user) => {
-      user.password = "*********";
-    });
+    const users = await this.userModel.find().select('_id firstName lastName email role isBlocked'); //select('name email ');
+  
 
     return users;
   }
@@ -32,7 +30,7 @@ export class AdminService {
 
   async allcaptainDetails() {
     const captains = await this.capModel.find()
-      .select('name vehicle phone socketId')  
+      .select('_id firstName lastname email role isverified  socketId')  
       .lean(); 
     return captains;
   }
