@@ -35,6 +35,7 @@ import { RazorpayModule } from './razorpay/razorpay.module';
 import { RideScheduleModule } from './ride-schedule/ride-schedule.module';
 import { RideService } from './ride/ride.service';
 import { RideScheduleService } from './ride-schedule/ride-schedule.service';
+import { ReturnTripModule } from './return-trip/return-trip.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { RideScheduleService } from './ride-schedule/ride-schedule.service';
     RazorpayModule,
   ScheduleModule,
     RideScheduleModule,
+    ReturnTripModule,
 
   ],
   controllers: [AppController, UserController],
