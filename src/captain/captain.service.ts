@@ -31,7 +31,7 @@ export class CaptainService {
 
 
     // Seed multiple test drivers
-    // async seedDrivers() {
+    // async seedDrivers() {   async seeddrivers
     //     const results = [];
     //     for (let i = 0; i < driverNames.length; i++) {
     //         const name = driverNames[i];
@@ -51,6 +51,7 @@ export class CaptainService {
     // }
 
     // Payout all drivers
+    
     async payoutAllDrivers(amountPerDriver: number) {
         const drivers = await this.captainModel.find();
         const payouts = [];

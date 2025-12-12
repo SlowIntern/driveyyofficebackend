@@ -125,7 +125,9 @@ export class RideService {
         if (!ride) throw new NotFoundException('Ride not found');
         if (ride.status !== 'ongoing') throw new BadRequestException('Ride not ongoing');
 
-        await this.rideModel.findByIdAndUpdate(rideId, { status: 'completed' });
+        const rides = await this.rideModel.findByIdAndUpdate(rideId, { status: 'completed' });
+        
+        console.log("Here is the detail of the ride before adding earning",rides);
         const captainInDb = await this.captainModel.findById(ride.captain._id);
         if (captainInDb === null)
         {
@@ -154,6 +156,15 @@ export class RideService {
         }
 
         await this.rideModel.findByIdAndUpdate(ride._id, { status: 'completed' });
+
+        const captain = await this.captainModel.findById(ride.captain._id); 
+        if (!captain)
+        {
+            throw new BadRequestException('Captain not found');
+        }
+        captain.totalEarnings += Number(ride.fare);
+
+        await captain.save();
 
         await this.captainModel.findByIdAndUpdate(user._id, { status: 'inactive' });
         
@@ -227,7 +238,6 @@ export class RideService {
 //     if (!ride) {
 //         throw new BadRequestException('No current ride found');
 //     }
-
 //     return {
 //         rideId: ride._id.toString(),
 //         userId: ride.user?._id?.toString() || null,
@@ -265,7 +275,21 @@ export class RideService {
             throw new BadRequestException('Ride not found');
         }
         
+        const captain=await this.captainModel.findById(ride.captain._id);
+        if(!captain)
+        {
+            throw new BadRequestException('Captain not found');
+        }   
+        const user=await this.userModel.findById(ride.user._id);
+        if(!user)
+        {
+            throw new BadRequestException('User not found');
+        }   
 
+        const CaptainName=captain.firstName + ' ' + captain.lastname;
+
+        const UserName=user.firstName + ' ' + user.lastName;
+    
         const data= {
             rideId: ride._id.toString(),
             userId: ride.user?._id?.toString() || null,
@@ -276,7 +300,9 @@ export class RideService {
             destination: ride.destination,
             fare: ride.fare ?? null,
             status: ride.status,
-            otp:ride.otp,
+            otp: ride.otp,
+            CaptainName: CaptainName,
+            UserName: UserName,
         };
 
         console.log("Current Ride Details from the backend", data);

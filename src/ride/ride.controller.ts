@@ -22,6 +22,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/decorators/roles.decorator';
 import { UserRole } from 'src/user/schema/user.schema';
+import { post } from 'axios';
 
 @Controller('rides')
 export class RideController {
@@ -324,7 +325,6 @@ export class RideController {
   // async getFare(@Body('pickup') pickup: string, @Body('destination') destination: string) {
   //   return await this.rideService.getFare(pickup, destination);
   // }
-
 
   @Get('dashboard')
   @UseGuards(JwtAuthGuard, RolesGuard)
