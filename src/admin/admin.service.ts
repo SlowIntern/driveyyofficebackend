@@ -12,11 +12,11 @@ import { Verified } from 'src/verified-service/verifySchema/verify.Schema';
 @Injectable()
 export class AdminService {
   
-  constructor(@InjectModel(User.name) private readonly userModel: Model<User>,
+constructor(@InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Captain.name) private readonly capModel: Model<Captain>,
     @InjectModel(Ride.name) private readonly rideModel: Model<Ride>,
     @InjectModel(BlackListEmail.name) private readonly blackModel: Model<BlackListEmail>,
-  @InjectModel(Verified.name)private readonly verifiedModel: Model<Verified>) { }
+    @InjectModel(Verified.name)private readonly verifiedModel: Model<Verified>) { }
 
   // get all user data
   async allUserDetails(): Promise<User[]> {        //Promise<User> for returning one user....
@@ -143,6 +143,6 @@ async captainDetail(captainId: string) {
 
   return data;
 }
-  
+
   
 }
