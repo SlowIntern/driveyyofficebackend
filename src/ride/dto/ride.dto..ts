@@ -12,6 +12,10 @@ export class CreateRideDto {
     @IsNotEmpty()
     @IsString()
     vehicleType: 'auto' | 'car' | 'moto';
+
+    @IsNotEmpty()
+    @IsString()
+    rideType?: 'return' | 'simple';
 }
 
 export class ConfirmRideDto {

@@ -16,12 +16,13 @@ import { StripeService } from 'src/stripe/stripe.service';
 import { BankModule } from 'src/bank/bank.module';
 import { RazorpayService } from 'src/razorpay/razorpay.service';
 import { RazorpayModule } from 'src/razorpay/razorpay.module';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Ride.name, schema: RideSchema }]), MapModule, CaptainModule, UserModule
   ,AuthModule,BankModule,RazorpayModule],
   controllers: [RideController],
-  providers: [RideService, JwtService,SendMessageGateway,StripeService,RazorpayService],
+  providers: [RideService, JwtService,SendMessageGateway,StripeService,RazorpayService,MailService],
   exports:[RideService,MongooseModule]
 })
 export class RideModule {}

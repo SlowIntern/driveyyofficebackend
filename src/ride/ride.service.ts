@@ -11,6 +11,7 @@ import { User } from 'src/user/schema/user.schema';
 import { StripeService } from 'src/stripe/stripe.service';
 import Stripe from 'stripe';
 import { RazorpayService } from 'src/razorpay/razorpay.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class RideService {
@@ -21,6 +22,7 @@ export class RideService {
         private readonly mapService: MapService,
         private readonly stripeService: StripeService,
         private readonly razorpayService: RazorpayService,
+        private readonly mailService:MailService
     ) { }
 
     // Calculate fare between pickup and destination 
@@ -49,9 +51,9 @@ export class RideService {
 
     // function to create ride
     async createRide(user: string, dto: CreateRideDto) {
-        const { pickup, destination, vehicleType } = dto;
+        const { pickup, destination, vehicleType, rideType } = dto;
     
-        if (!user || !pickup || !destination || !vehicleType) {
+        if (!user || !pickup || !destination || !vehicleType || !rideType) {
             // console.log(user);
             // console.log(pickup);
             // console.log(destination);
@@ -65,13 +67,35 @@ export class RideService {
 
         const fare = await this.getFare(pickup, destination);
 
-        const ride = await this.rideModel.create({
-            user,
-            pickup,
-            destination,
-            otp: this.getOtp(6),
-            fare: fare[vehicleType],
-        });
+
+        let ride;
+        if (rideType === 'return')
+        {
+             ride = await this.rideModel.create({
+                user,
+                pickup,
+                destination,
+                otp: this.getOtp(6),
+                 fare:fare[vehicleType] * 2, // double the fare
+                rideType: 'return',
+            });
+
+        }
+        else
+        {
+             ride = await this.rideModel.create({
+                user,
+                pickup,
+                destination,
+                otp: this.getOtp(6),
+                 fare: fare[vehicleType],
+                rideType: 'simple',
+            });
+        }
+
+        console.log("The ride details after ride created:", ride);
+
+       
 
         return ride;
     }
@@ -90,10 +114,23 @@ export class RideService {
         await this.captainModel.findByIdAndUpdate(captain._id, {status: 'active'});
 
         const ride = await this.rideModel.findById(rideId).populate('user').populate('captain').select('+otp');
-        
-       
+
+
+
         
         if (!ride) throw new NotFoundException('Ride not found');
+
+
+
+
+        await this.mailService.sendRideConfirmation({
+            email: ride.user.email,
+            firstName: ride.user.firstName,
+            pickup: ride.pickup,
+            destination: ride.destination,
+            fare: ride.fare,
+            otp: ride.otp,
+        });
 
       
         return ride;

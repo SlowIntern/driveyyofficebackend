@@ -84,8 +84,12 @@ export class Ride extends Document {
     @Prop()
     payoutId?: string;
 
-  
-
+    @Prop({
+        type: String,
+        enum: ['return', 'simple'],
+        default: 'return',
+    })
+    rideType?: string;
 }
 
 export const RideSchema = SchemaFactory.createForClass(Ride);
