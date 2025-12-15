@@ -1,10 +1,10 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 import { Ride } from "src/ride/rideSchema/ride.schema";
 
 
 @Schema({ timestamps: true})
-export class ReturnTrip extends Document {
+export class ReturnTrips extends Document {
 
     @Prop({ type: Types.ObjectId, ref: 'Ride', required: true })
     rideId: Ride;
@@ -12,6 +12,20 @@ export class ReturnTrip extends Document {
     @Prop({ required: true })
     price: number;
     
-    @Prop({ required: true })
-    returnPickup: string;
+    @Prop()
+    pickup: string;
+
+
+    @Prop()
+    destination: string;
+
+    @Prop({
+        type: String,
+        enum: ['pending', 'accepted', 'ongoing', 'completed', 'cancelled'],
+        default: 'pending',})
+    status: string;
 }
+
+
+
+export const ReturnTripSchema = SchemaFactory.createForClass(ReturnTrips);

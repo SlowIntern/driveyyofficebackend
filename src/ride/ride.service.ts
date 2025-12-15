@@ -12,6 +12,7 @@ import { StripeService } from 'src/stripe/stripe.service';
 import Stripe from 'stripe';
 import { RazorpayService } from 'src/razorpay/razorpay.service';
 import { MailService } from 'src/mail/mail.service';
+import { ReturnTrips } from 'src/return-trip/schema/return.schema';
 
 @Injectable()
 export class RideService {
@@ -19,6 +20,7 @@ export class RideService {
         @InjectModel(Ride.name) private readonly rideModel: Model<Ride>,
         @InjectModel(Captain.name) private readonly captainModel: Model<Captain>,
         @InjectModel(User.name) private readonly userModel: Model<User>,
+        @InjectModel(ReturnTrips.name) private readonly returnTripModel: Model<ReturnTrips>,
         private readonly mapService: MapService,
         private readonly stripeService: StripeService,
         private readonly razorpayService: RazorpayService,
@@ -52,6 +54,8 @@ export class RideService {
     // function to create ride
     async createRide(user: string, dto: CreateRideDto) {
         const { pickup, destination, vehicleType, rideType } = dto;
+
+        console.log("Create Ride DTO remove it after checking if it is working or not:", dto);
     
         if (!user || !pickup || !destination || !vehicleType || !rideType) {
             // console.log(user);
@@ -95,6 +99,7 @@ export class RideService {
 
         console.log("The ride details after ride created:", ride);
 
+
        
 
         return ride;
@@ -123,14 +128,14 @@ export class RideService {
 
 
 
-        await this.mailService.sendRideConfirmation({
-            email: ride.user.email,
-            firstName: ride.user.firstName,
-            pickup: ride.pickup,
-            destination: ride.destination,
-            fare: ride.fare,
-            otp: ride.otp,
-        });
+        // await this.mailService.sendRideConfirmation({
+        //     email: ride.user.email,
+        //     firstName: ride.user.firstName,
+        //     pickup: ride.pickup,
+        //     destination: ride.destination,
+        //     fare: ride.fare,
+        //     otp: ride.otp,
+        // });
 
       
         return ride;

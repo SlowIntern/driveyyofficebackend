@@ -87,7 +87,7 @@ export class Ride extends Document {
     @Prop({
         type: String,
         enum: ['return', 'simple'],
-        default: 'return',
+        default: 'simple',
     })
     rideType?: string;
 }
