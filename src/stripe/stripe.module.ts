@@ -11,6 +11,8 @@ import { Captain, CaptainSchema } from 'src/captain/capschema/captain.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
 import { MapService } from 'src/map/map.service';
 import { RazorpayService } from 'src/razorpay/razorpay.service';
+import { MailService } from 'src/mail/mail.service';
+import { ReturnTrips, ReturnTripSchema } from 'src/return-trip/schema/return.schema';
 
 @Module({
   imports: [
@@ -20,10 +22,11 @@ import { RazorpayService } from 'src/razorpay/razorpay.service';
       { name: Ride.name, schema: RideSchema },
       { name: Captain.name, schema: CaptainSchema },
       { name: User.name, schema: UserSchema }, // <--- Add this
+      {name:ReturnTrips.name,schema:ReturnTripSchema}
     ]),
   ],
   controllers: [StripeController],
-  providers: [StripeService, RideService,MapService,RazorpayService],
+  providers: [StripeService, RideService,MapService,RazorpayService,MailService],
   exports: [StripeService],
 })
 export class StripeModule { }

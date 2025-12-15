@@ -36,6 +36,8 @@ import { RideScheduleModule } from './ride-schedule/ride-schedule.module';
 import { RideService } from './ride/ride.service';
 import { RideScheduleService } from './ride-schedule/ride-schedule.service';
 import { ReturnTripModule } from './return-trip/return-trip.module';
+import { MailModule } from './mail/mail.module';
+import { MailService } from './mail/mail.service';
 
 @Module({
   imports: [
@@ -71,9 +73,10 @@ import { ReturnTripModule } from './return-trip/return-trip.module';
   ScheduleModule,
     RideScheduleModule,
     ReturnTripModule,
+    MailModule,
 
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, UserService,RolesGuard,JwtService, TwilioService, EmailService, TestchatGateway, TestchatService], 
+  providers: [AppService, UserService,RolesGuard,JwtService, TwilioService, EmailService, TestchatGateway, TestchatService,MailService], 
 })
 export class AppModule { }
