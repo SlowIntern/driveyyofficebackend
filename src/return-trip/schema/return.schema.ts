@@ -24,6 +24,15 @@ export class ReturnTrips extends Document {
         enum: ['pending', 'accepted', 'ongoing', 'completed', 'cancelled'],
         default: 'pending',})
     status: string;
+
+
+
+
+    // Note the time 
+    @Prop()
+    waitingTime: number;
+
+
 }
 
 

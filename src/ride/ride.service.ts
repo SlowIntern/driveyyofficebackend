@@ -107,9 +107,6 @@ export class RideService {
 
         console.log("The ride details after ride created:", ride);
 
-
-       
-
         return ride;
     }
 
@@ -143,12 +140,6 @@ export class RideService {
                 await returnTrip.save();
             }
         }
-
-
-
-
-
-
         // await this.mailService.sendRideConfirmation({
         //     email: ride.user.email,
         //     firstName: ride.user.firstName,
@@ -503,4 +494,11 @@ export class RideService {
         rideHistory: rides, // full list of rides
     };
    }
+    
+    
+    async waitinngCharges()
+    {
+        const ridesWithWaitingCharges = await this.returnTripModel.find({ waitingTime: { $gt: 10 }, status: 'completed' });
+
+    }
 }
