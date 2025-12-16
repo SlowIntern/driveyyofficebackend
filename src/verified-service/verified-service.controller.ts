@@ -1,6 +1,7 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { VerifiedServiceService } from './verified-service.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @Controller('verified-service')
 export class VerifiedServiceController {
@@ -24,5 +25,15 @@ export class VerifiedServiceController {
     @Body() body: any,
   ) {
     return this.verifiedService.uploadDocuments(files, body);
+  }
+
+
+
+  @UseGuards(JwtAuthGuard)
+  @Get('verifyCap')
+  
+  async verifyCap(@Req() req) {
+    console.log("The user in verified service controller is", req.user);  
+    return this.verifiedService.docsAgg(req.user);
   }
 }
