@@ -82,6 +82,14 @@ export class RideService {
                 otp: this.getOtp(6),
                  fare:fare[vehicleType] * 2, // double the fare
                 rideType: 'return',
+             });
+            
+            await this.returnTripModel.create({
+                rideId: ride._id,
+                price: ride.fare,
+                pickup: ride.pickup,
+                destination: ride.destination,
+                status: 'pending'
             });
 
         }
@@ -120,10 +128,23 @@ export class RideService {
 
         const ride = await this.rideModel.findById(rideId).populate('user').populate('captain').select('+otp');
 
+     
 
 
         
         if (!ride) throw new NotFoundException('Ride not found');
+
+
+
+        if (ride.rideType === 'return') {
+            const returnTrip = await this.returnTripModel.findOne({ rideId: ride._id });
+            if (returnTrip) {
+                returnTrip.status = 'accepted';
+                await returnTrip.save();
+            }
+        }
+
+
 
 
 
@@ -155,6 +176,15 @@ export class RideService {
 
         await this.rideModel.findByIdAndUpdate(rideId, { status: 'ongoing' });
 
+
+        if (ride.rideType === 'return') {
+            const returnTrip = await this.returnTripModel.findOne({ rideId: ride._id });
+            if (returnTrip) {
+                returnTrip.status = 'ongoing';
+                await returnTrip.save();
+            }
+        }
+
         return ride;
     }
 
@@ -184,6 +214,15 @@ export class RideService {
         console.log("Here is the detail of the captain after adding earning",captainInDb);
 
         await this.captainModel.findByIdAndUpdate(captain._id, { status: 'inactive' }); // after the ride is completed the captain is available for another rides
+
+
+        if (ride.rideType === 'return') {
+            const returnTrip = await this.returnTripModel.findOne({ rideId: ride._id });
+            if (returnTrip) {
+                returnTrip.status = 'completed';
+                await returnTrip.save();
+            }
+        }
 
         return ride;
     }
@@ -345,6 +384,7 @@ export class RideService {
             otp: ride.otp,
             CaptainName: CaptainName,
             UserName: UserName,
+            rideType: ride.rideType,
         };
 
         console.log("Current Ride Details from the backend", data);
