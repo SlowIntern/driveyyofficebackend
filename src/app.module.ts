@@ -38,6 +38,7 @@ import { RideScheduleService } from './ride-schedule/ride-schedule.service';
 import { ReturnTripModule } from './return-trip/return-trip.module';
 import { MailModule } from './mail/mail.module';
 import { MailService } from './mail/mail.service';
+import { ServiceAreaModule } from './service-area/service-area.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { MailService } from './mail/mail.service';
     RideScheduleModule,
     ReturnTripModule,
     MailModule,
+    ServiceAreaModule,
 
   ],
   controllers: [AppController, UserController],
