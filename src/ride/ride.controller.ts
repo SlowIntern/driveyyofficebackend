@@ -23,6 +23,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/decorators/roles.decorator';
 import { UserRole } from 'src/user/schema/user.schema';
 import { post } from 'axios';
+import { AddWaitingChargeDto } from './dto/waiting.dto';
 
 @Controller('rides')
 export class RideController {
@@ -333,6 +334,16 @@ export class RideController {
   }
 
 
+  @Post('waiting')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async addWaitingCharge(@Body() dto: AddWaitingChargeDto, @Req() req) {
+    
+    if (req.user.role !== UserRole.CAPTAIN)
+    {
+      throw new NotFoundException('Only captains can add waiting charges');
+    }
+    return this.rideService.waitingCharges(dto);
+  }
 
 
 }

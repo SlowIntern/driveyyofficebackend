@@ -90,6 +90,16 @@ export class Ride extends Document {
         default: 'simple',
     })
     rideType?: string;
+
+
+
+    @Prop({ default: 0 })
+    waitingTime: number;
+
+ 
+    @Prop({ default: 0 })
+    waitingCharge: number;
+
 }
 
 export const RideSchema = SchemaFactory.createForClass(Ride);
