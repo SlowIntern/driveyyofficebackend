@@ -13,6 +13,7 @@ import Stripe from 'stripe';
 import { RazorpayService } from 'src/razorpay/razorpay.service';
 import { MailService } from 'src/mail/mail.service';
 import { ReturnTrips } from 'src/return-trip/schema/return.schema';
+import { AddWaitingChargeDto } from './dto/waiting.dto';
 
 @Injectable()
 export class RideService {
@@ -496,9 +497,37 @@ export class RideService {
    }
     
     
-    async waitinngCharges()
-    {
-        const ridesWithWaitingCharges = await this.returnTripModel.find({ waitingTime: { $gt: 10 }, status: 'completed' });
+    async waitingCharges(dto: AddWaitingChargeDto) {
+        const { rideId, waitingTime } = dto;
 
+        if (!rideId || waitingTime === undefined) {
+            throw new BadRequestException('Ride ID and waiting time are required');
+        }
+
+        const ride = await this.rideModel.findById(rideId);
+        if (!ride) {
+            throw new NotFoundException('Ride not found');
+        }
+
+        const waitingSeconds = Number(waitingTime);
+        if (isNaN(waitingSeconds) || waitingSeconds <= 0) {
+            return ride; 
+        }
+
+        // convert seconds se minutes
+        const waitingMinutes = Math.floor(waitingSeconds / 60);
+
+        // ₹5 per 10 minutes
+        const chargeUnits = Math.floor(waitingMinutes);
+        const waitingCharge = chargeUnits * 5;
+
+       ride.waitingTime = waitingSeconds;
+        ride.waitingCharge = waitingCharge;
+        ride.fare += waitingCharge;
+
+        await ride.save();
+
+        return ride;
     }
+
 }
