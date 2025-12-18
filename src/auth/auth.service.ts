@@ -67,7 +67,7 @@ export class AuthService {
         if (!user) throw new UnauthorizedException('Invalid email or password');
 
         if (user.isBlocked) {
-            throw new BadRequestException("User has been blocked call on this number to unblock");
+            throw new BadRequestException("User has been blocked call on this 7876142601 number to unblock");
         }
         const isMatch = await bcrypt.compare(dto.password, user.password);
         if (!isMatch) throw new UnauthorizedException('Invalid email or password');
@@ -219,10 +219,6 @@ export class AuthService {
         
         return;
     }
-
-
-
-
 }
 
 

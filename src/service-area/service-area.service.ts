@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ServiceArea } from './schema/service.schema';
 import { Model } from 'mongoose';
@@ -19,6 +19,35 @@ export class ServiceAreaService {
     async findAll() {
         return this.serviceModel.find({ isActive: true }).lean();
     }
+
+    async deleteService(_id: string) {
+
+        if (!_id)
+        {
+            throw new Error("Id is required to delete a service area");
+        }
+
+
+        const result = await this.serviceModel.findByIdAndDelete(_id);
+     
+        if (!result) {
+            throw new BadRequestException("Service area not found or already deleted");
+        }
+        
+        return { message: "Service area has been deleted successfully" };
+    }
+
+
+
+    // async editServuceArea(id:string)
+    // {
+    //     const serviceArea = await this.serviceModel.findById(id);
+     
+    //     if (!serviceArea)
+    //     {
+    //         throw new BadRequestException("Service area not found");
+    //     }        
+    // }
 
 
 }

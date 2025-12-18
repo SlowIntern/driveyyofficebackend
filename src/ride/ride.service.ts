@@ -57,7 +57,7 @@ export class RideService {
         const { pickup, destination, vehicleType, rideType } = dto;
 
         console.log("Create Ride DTO remove it after checking if it is working or not:", dto);
-    
+
         if (!user || !pickup || !destination || !vehicleType || !rideType) {
             // console.log(user);
             // console.log(pickup);
@@ -268,7 +268,6 @@ export class RideService {
     }
 
 
-
 //     async currentRideDetails(rideId: any) {
     
 //         console.log("user in the currentRideDetails funtion", user);
@@ -383,6 +382,7 @@ export class RideService {
 
         return data;
     }
+
 
     async createPayment(rideId: string) {
         const ride = await this.rideModel.findById(rideId);
@@ -526,7 +526,7 @@ export class RideService {
         ride.fare += waitingCharge;
 
         await ride.save();
-
+        
         return ride;
     }
 
