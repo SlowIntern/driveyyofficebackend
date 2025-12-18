@@ -5,7 +5,6 @@ import { Document } from 'mongoose';
 
 @Schema({
     timestamps: true,
-
 })
 export class ServiceArea extends Document {
     @Prop({
