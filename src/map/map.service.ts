@@ -55,7 +55,7 @@ export class MapService {
             const route = response.data.routes?.[0];
             if (!route) throw new BadRequestException('No route found');
 
-            return {
+            return {  
                 distance: { value: route.summary.distance }, // meters ma hoga distance
                 duration: { value: route.summary.duration }, // seconds ma hoga duration
             };

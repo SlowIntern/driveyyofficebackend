@@ -118,7 +118,7 @@ export class AuthService {
     }
 
 
-    // --- from here the work of captain register and login begins ---
+    // --- from here the work of captain register and login begins 
 
     async registerCap(dto: CreateCaptainDto) {
         const { email, password } = dto;
@@ -129,7 +129,7 @@ export class AuthService {
             throw new BadRequestException('Captain with this email already exists');
         }
 
-        // password gupt krna
+        // password gupt krna ha nhi thi nhi chalega.......
         const hashedPassword = await bcrypt.hash(password, 10);
 
 
@@ -174,13 +174,10 @@ export class AuthService {
         // but here also will be a function to send otp in mail. complete remaining code as soon as possible
 
         const otp = this.generateOTP(4);
-
-
         const token = this.jwtService.sign({ sub: user._id, otp: otp, email: user.email });
 
         return token // after the frontend recieve this token it will decode it and match the otp or we can save the otp in the database
     }
-
     async changePassword(dto: ChangePasswordDto)
     {
         if (!dto.email || !dto.oldPassword || !dto.newPassword || !dto.role)
@@ -189,8 +186,6 @@ export class AuthService {
         }
 
         let user;
-
-
         //right now i am checking for two user role only one is user and another in captain but i will also add one more role that is admin
         if (dto.role === 'user')
         {
@@ -200,25 +195,20 @@ export class AuthService {
         {
             user = this.captainModel.findOne({ email: dto.email });
         }
-
-
         const match: boolean = await bcrypt.compare(dto.oldPassword, user.password);
 
         if (!match)
         {
             throw new BadRequestException("The password did not match with the old password");
         }
-
-        
         // write rest of the code for change password.
-        
         const salt = await bcrypt.genSalt(10);
         const hashPass = await bcrypt.hash(dto.newPassword, salt);
         user.password = hashPass;
         user.save();
         
         return;
-    }
+    }  
 }
 
 

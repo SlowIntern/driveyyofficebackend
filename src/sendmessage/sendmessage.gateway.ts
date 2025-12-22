@@ -58,7 +58,7 @@
 //   }
 
 //   // Register a user or captain’s socket connection
-   
+
 //   @SubscribeMessage('register-socket')
 //   async handleRegisterSocket(
 //     @ConnectedSocket() client: Socket,
@@ -92,7 +92,7 @@
 
 
 //   // Send an event (e.g., new-ride, ride-started) to a specific socket
-   
+
 //   sendMessageToSocketId(socketId: string, payload: { event: string; data: any }) {
 //     if (!socketId) {
 //       this.logger.warn('No socketId provided to sendMessageToSocketId');
@@ -102,7 +102,7 @@
 //   }
 
 //   // Send chat messages between user & captain
-   
+
 //   @SubscribeMessage('send-message')
 //   async handleSendMessage(
 //     @MessageBody()
@@ -116,7 +116,7 @@
 //     if (!data.rideId || !data.message) return;
 
 //     const ride = await this.rideModel.findById(data.rideId);
-    
+
 //     if (!ride) {
 //       this.logger.warn(`Ride not found for message: ${data.rideId}`);
 //       return;
@@ -196,9 +196,9 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
     @InjectModel(Captain.name) private captainModel: Model<Captain>,
   ) { }
 
-  // -----------------------------------------------------
+
   //  CONNECTION EVENTS
-  // -----------------------------------------------------
+ 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
@@ -215,9 +215,8 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
     }
   }
 
-  // -----------------------------------------------------
+
   //  REGISTER SOCKET
-  // -----------------------------------------------------
   @SubscribeMessage('register-socket')
   async handleRegisterSocket(
     @ConnectedSocket() client: Socket,
@@ -237,9 +236,8 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
     client.emit('registered', { success: true });
   }
 
-  // -----------------------------------------------------
   //  JOIN CHAT ROOM (ONE-TO-ONE CHAT)
-  // -----------------------------------------------------
+
   @SubscribeMessage('join-room')
   handleJoinRoom(
     @ConnectedSocket() client: Socket,
@@ -255,9 +253,9 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
     client.emit('room-joined', { room: roomName });
   }
 
-  // -----------------------------------------------------
+
   //  SEND MESSAGE IN ROOM (ONE-TO-ONE CHAT)
-  // -----------------------------------------------------
+ 
   @SubscribeMessage('send-message')
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
@@ -281,9 +279,8 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
     });
   }
 
-  // -----------------------------------------------------
+
   //  SEND SPECIFIC EVENT TO USER/CAPTAIN SOCKET (RIDE EVENTS)
-  // -----------------------------------------------------
   sendMessageToSocketId(socketId: string, payload: { event: string; data: any }) {
     if (!socketId) {
       this.logger.warn('Missing socketId in sendMessageToSocketId');
@@ -292,4 +289,7 @@ export class SendMessageGateway implements OnGatewayConnection, OnGatewayDisconn
 
     this.server.to(socketId).emit(payload.event, payload.data);
   }
+
+
+  
 }

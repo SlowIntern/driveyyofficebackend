@@ -32,6 +32,8 @@ export class VerifiedServiceService {
             ...uploaded,
         });
 
+        console.log("Document saved:", saved);
+    
         return saved;
     }
 
@@ -75,13 +77,6 @@ export class VerifiedServiceService {
             },
             { $unwind: '$captain' },
         ]);
-
-        
-
-
-
-
-
     }
 
 
