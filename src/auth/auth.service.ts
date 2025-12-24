@@ -150,6 +150,7 @@ export class AuthService {
     }
 
 
+
     private generateOTP(length:number){
         
         const otp = crypto.randomInt(Math.pow(10, length - 1), Math.pow(10, length)).toString();
@@ -158,7 +159,8 @@ export class AuthService {
     }
 
 
-    async forgetPassword(emaily: string,role:string)
+
+    async forgetPassword(emaily: string, role: string)
     {
         let user;
         if (role === 'user' || role === 'admin')

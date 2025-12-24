@@ -46,7 +46,7 @@ export class ServiceAreaService {
     //     if (!serviceArea)
     //     {
     //         throw new BadRequestException("Service area not found");
-    //     }        
+    //     }
     // }
 
 
